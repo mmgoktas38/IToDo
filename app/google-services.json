@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1092419035925",
+    "project_id": "itodo-45853",
+    "storage_bucket": "itodo-45853.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1092419035925:android:f7a9cf38dcb5414e483f1c",
+        "android_client_info": {
+          "package_name": "com.kogo.itodo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1092419035925-rnhh1h6utdb36gmc31pubo2vb4ve7gro.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAUmUZ9fuCQSD5mkZPWaGxiilvqLBUmv8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1092419035925-rnhh1h6utdb36gmc31pubo2vb4ve7gro.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
