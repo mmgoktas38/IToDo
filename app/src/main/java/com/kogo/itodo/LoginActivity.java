@@ -3,8 +3,10 @@ package com.kogo.itodo;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Toast;
 
@@ -18,6 +20,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private ActivityLoginBinding loginBinding;
+    private ProgressDialog loader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,18 +34,19 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        loginBinding.buttonLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                authenticateUser();
+        loader = new ProgressDialog(this);
+        loginBinding.buttonLogin.setOnClickListener(view -> { authenticateUser(); });
+        loginBinding.textViewRegister.setOnClickListener(view -> { switchToRegister(); });
+        loginBinding.imageViewVisibleOnOff.setOnClickListener(view -> {
+            if (loginBinding.editTextPassword.getInputType() == 144){    // 144 mean is that if we can see the password now
+                loginBinding.editTextPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);  // close the password
+                loginBinding.imageViewVisibleOnOff.setImageResource(R.drawable.visible_off);
             }
-        });
-
-        loginBinding.textViewRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                switchToRegister();
+            else {
+                loginBinding.editTextPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);      // show the password
+                loginBinding.imageViewVisibleOnOff.setImageResource(R.drawable.visible);
             }
+            loginBinding.editTextPassword.setSelection(loginBinding.editTextPassword.length());   // set cursor position end of the password
         });
 
     }
@@ -55,18 +59,25 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(LoginActivity.this, "Please fill all fields.", Toast.LENGTH_LONG).show();
             return;
         }
+        else {
+            loader.setMessage("Loading . . .");
+            loader.setCanceledOnTouchOutside(false);
+            loader.show();
 
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                           showMainActivity();
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_LONG).show();
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                showMainActivity();
+                                loader.dismiss();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Not found any user", Toast.LENGTH_LONG).show();
+                                loader.dismiss();
+                            }
                         }
-                    }
-                });
+                    });
+        }
 
     }
 
