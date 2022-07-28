@@ -52,11 +52,18 @@ public class WillDoAdapter extends RecyclerView.Adapter<WillDoAdapter.CardViewHo
         return new CardViewHolder(view);
     }
 
+    // method for filtering our recyclerview items.
+    public void filterList(ArrayList<WillDo> filterllist) {
+        willDoArrayList = filterllist;
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
 
         WillDo willDoItem = willDoArrayList.get(position);
-
+        Log.e("size", String.valueOf(willDoArrayList.size()));
+        Log.e("size", String.valueOf(willDoItem.getWillDoText()));
         FirebaseUser currentUser = null;
         FirebaseDatabase database;
         DatabaseReference reference;
@@ -74,12 +81,14 @@ public class WillDoAdapter extends RecyclerView.Adapter<WillDoAdapter.CardViewHo
         holder.textViewCreatedDate.setText(willDoItem.getCreatedDate().toString());
         holder.textViewDeadline.setText(willDoItem.getDeadLine().toString());
         holder.cardViewWillDo.setOnClickListener(view -> {
+
             AlertDialog.Builder myDialog = new AlertDialog.Builder(mContext);
             LayoutInflater inflater = LayoutInflater.from(mContext);
             View myView = inflater.inflate(R.layout.add_task,null);
             myDialog.setView(myView);
             final AlertDialog dialog = myDialog.create();
             dialog.setCancelable(false);
+
             final EditText editTextAddTask = myView.findViewById(R.id.editTextAddTask);
             final EditText editTextDeadline = myView.findViewById(R.id.editTextDeadline);
             TextView textViewSave = myView.findViewById(R.id.textViewSave);

@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Toolbar;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private WillDoAdapter willDoAdapter;
     private List<WillDo> willDoList = new ArrayList<>();
     private List<WillDo> trashList = new ArrayList<>();
+    private ArrayList<WillDo> filteredlist = new ArrayList<>();
     private ProgressDialog loader;
     private FirebaseUser currentUser;
     private FirebaseDatabase database;
@@ -97,6 +99,24 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_layout,menu);
+        MenuItem searchItem = menu.findItem(R.id.item_search);
+
+        // getting search view of our item.
+        SearchView searchView = (SearchView) searchItem.getActionView();
+
+        // below line is to call set on query text listener method.
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filter(newText);
+                return false;
+            }
+        });
         return true;
     }
 
@@ -109,83 +129,87 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.item_logout:
                 logoutUser();
+                return true;
+
             default: return super.onOptionsItemSelected(item);
         }
-
     }
 
-    WillDo deleteData;
+    private void filter(String text) {
 
-    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT) {
-        @Override
-        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-            return false;
+        filteredlist.clear();
+
+        for (WillDo item : willDoList) {
+            if (item.getWillDoText().toLowerCase().contains(text.toLowerCase())) {
+                filteredlist.add(item);
+            }
         }
-
-        @Override
-        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-            int position = viewHolder.getAdapterPosition();
-            deleteData = willDoList.get(position);
-        //    willDoList.remove(deleteData);
-        //    willDoAdapter.notifyDataSetChanged();
-
-            reference = database.getReference().child("tasks").child(onlineUserID).child(deleteData.getId());
-
-            Snackbar.make(mainBinding.recyclerViewWillDo, "Moving to trash . . .", Snackbar.LENGTH_LONG).setAction("Cancel", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // willDoList.add(position,deleteData);
-                }
-            }).setActionTextColor(Color.WHITE).addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                @Override
-                public void onDismissed(Snackbar transientBottomBar, int event) {
-                    super.onDismissed(transientBottomBar, event);
-                    Log.e("onDismissed", String.valueOf(event));    // 1 come back basıldı - 2 basılmadı
-                    if(event == 2){
-                        trashReference.child(deleteData.getId()).setValue(deleteData);
-                        Log.e("delete ", String.valueOf(deleteData.getId()));
-                        database.getReference().child("tasks").child(onlineUserID).child(deleteData.getId()).removeValue();
-                        // reference.removeValue();
-                    }
-                    if (event == 1){
-                        willDoAdapter.notifyDataSetChanged();
-                    }
-                }
-
-                @Override
-                public void onShown(Snackbar transientBottomBar) {
-                    super.onShown(transientBottomBar);
-                    Log.e("onShown", "onShown");
-                }
-            }).show();
-
+        if (filteredlist.isEmpty()) {
+            Toast.makeText(this, "No Data Found..", Toast.LENGTH_SHORT).show();
+            willDoAdapter.filterList(filteredlist);
+        } else {
+            willDoAdapter.filterList(filteredlist);
         }
+    }
 
-        @Override
-        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+    public void holdRecyclerView(){
+        mainBinding.recyclerViewWillDo.setHasFixedSize(true);
+        mainBinding.recyclerViewWillDo.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false));
+        willDoAdapter = null;
+    }
 
-            new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(MainActivity.this,R.color.deleteColor))
-                    .addSwipeLeftActionIcon(R.drawable.ic_baseline_delete_24)
-                    .addSwipeLeftLabel("Move to trash")
-                    .setSwipeLeftLabelColor(ContextCompat.getColor(MainActivity.this,R.color.white))
-                    .create()
-                    .decorate();
+    public void getDatas(){
+        reference = database.getReference().child("tasks").child(onlineUserID);
 
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-        }
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-    };
+                willDoList.clear();     // this is important, because if we dont clear the list same object again add
+                for(DataSnapshot ds : snapshot.getChildren()) {
+                    String id = ds.child("id").getValue(String.class);
+                    String willDoText = ds.child("willDoText").getValue(String.class);
+                    String createdDate = ds.child("createdDate").getValue(String.class);
+                    String deadLine = ds.child("deadLine").getValue(String.class);
+
+                    WillDo willDoItem = new WillDo(id, willDoText, createdDate, deadLine);
+                    willDoList.add(willDoItem);
+                }
+
+                if (filteredlist.isEmpty()){
+                    willDoAdapter = new WillDoAdapter(MainActivity.this, willDoList);
+                }
+                else {
+                    SearchView simpleSearchView = (SearchView) findViewById(R.id.item_search); // inititate a search view
+                    CharSequence query = simpleSearchView.getQuery();
+                    //getDatas();
+                    filter(query.toString());
+                    Log.e("query",query.toString());
+                }
+
+                mainBinding.recyclerViewWillDo.setAdapter(willDoAdapter);
+                if (willDoList.isEmpty()){
+                    mainBinding.imageViewAddTask.setVisibility(View.VISIBLE);
+                }
+                else {
+                    mainBinding.imageViewAddTask.setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(MainActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     private void addTask(){
         reference = database.getReference().child("tasks").child(onlineUserID);
 
         AlertDialog.Builder myDialog = new AlertDialog.Builder(this);
         LayoutInflater inflater = LayoutInflater.from(this);
-
         View myView = inflater.inflate(R.layout.add_task,null);
         myDialog.setView(myView);
-
         final AlertDialog dialog = myDialog.create();
         dialog.setCancelable(false);
 
@@ -218,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
             String id = reference.push().getKey();
 
             if (task.isEmpty()){
-                Toast.makeText(this, "Task must be filled", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Task must be filled", Toast.LENGTH_SHORT).show();
                 return;
             }
             else {
@@ -237,47 +261,70 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public void getDatas(){
-        reference = database.getReference().child("tasks").child(onlineUserID);
 
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                willDoList.clear();     // this is important, because if we dont clear the list same object again add
-                for(DataSnapshot ds : snapshot.getChildren()) {
+    WillDo deleteData;
 
-                    String id = ds.child("id").getValue(String.class);
-                    String willDoText = ds.child("willDoText").getValue(String.class);
-                    String createdDate = ds.child("createdDate").getValue(String.class);
-                    String deadLine = ds.child("deadLine").getValue(String.class);
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
 
-                    WillDo willDoItem = new WillDo(id, willDoText, createdDate, deadLine);
-                    willDoList.add(willDoItem);
-                }
-
-                willDoAdapter = new WillDoAdapter(MainActivity.this, willDoList);
-                mainBinding.recyclerViewWillDo.setAdapter(willDoAdapter);
-                if (willDoList.isEmpty()){
-                    mainBinding.imageViewAddTask.setVisibility(View.VISIBLE);
-                }
-                else {
-                    mainBinding.imageViewAddTask.setVisibility(View.INVISIBLE);
-                }
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+            int position = viewHolder.getAdapterPosition();
+            if (filteredlist.isEmpty()){
+                deleteData = willDoList.get(position);
+            }
+            else {
+                deleteData = filteredlist.get(position);
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(MainActivity.this, "Fail to get data.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+            reference = database.getReference().child("tasks").child(onlineUserID).child(deleteData.getId());
 
-    public void holdRecyclerView(){
-        mainBinding.recyclerViewWillDo.setHasFixedSize(true);
-        mainBinding.recyclerViewWillDo.setLayoutManager(new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false));
-        willDoAdapter = null;
-    }
+            Snackbar.make(mainBinding.recyclerViewWillDo, "Moving to trash . . .", Snackbar.LENGTH_LONG).setAction("Cancel", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                }
+            }).setActionTextColor(Color.WHITE).addCallback(new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                @Override
+                public void onDismissed(Snackbar transientBottomBar, int event) {
+                    super.onDismissed(transientBottomBar, event);
+                    Log.e("onDismissed", String.valueOf(event));    // 1 cancel basıldı - 2 basılmadı
+                    if(event == 2){
+                        trashReference.child(deleteData.getId()).setValue(deleteData);  // save the data to trash
+                        database.getReference().child("tasks").child(onlineUserID).child(deleteData.getId()).removeValue(); // remove data from tasks
+                    }
+                    if (event == 1){
+                        willDoAdapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onShown(Snackbar transientBottomBar) {
+                    super.onShown(transientBottomBar);
+                    Log.e("onShown", "onShown");
+                }
+            }).show();
+
+        }
+
+        @Override
+        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+
+            new RecyclerViewSwipeDecorator.Builder(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                    .addSwipeLeftBackgroundColor(ContextCompat.getColor(MainActivity.this,R.color.deleteColor))
+                    .addSwipeLeftActionIcon(R.drawable.ic_baseline_delete_24)
+                    .addSwipeLeftLabel("Move to trash")
+                    .setSwipeLeftLabelColor(ContextCompat.getColor(MainActivity.this,R.color.white))
+                    .create()
+                    .decorate();
+
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+        }
+
+    };
 
 
     private void logoutUser(){

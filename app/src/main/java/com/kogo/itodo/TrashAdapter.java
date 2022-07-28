@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -43,6 +44,12 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.CardViewHold
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_will_do, parent, false);
 
         return new TrashAdapter.CardViewHolder(view);
+    }
+
+    // method for filtering our recyclerview items.
+    public void filterList(ArrayList<WillDo> filterllist) {
+        willDoArrayList = filterllist;
+        notifyDataSetChanged();
     }
 
     @Override
