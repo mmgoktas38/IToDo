@@ -118,5 +118,15 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:id="@+id/imageViewInfoPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/editTextPassword"
+            app:layout_constraintEnd_toStartOf="@+id/imageViewVisibleOnOff"
+            app:layout_constraintTop_toTopOf="@+id/editTextPassword"
+            app:srcCompat="@drawable/info" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -3,10 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/StajPointo/IToDo/app/src/main/res/drawable/corner_background.xml" value="0.3675" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/drawable/edittext_bg.xml" value="0.3675" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/drawable/empty_trash.xml" value="0.3675" />
+        <entry key="..\:/StajPointo/IToDo/app/src/main/res/drawable/info.xml" value="0.3675" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/drawable/layout_bg.xml" value="0.3675" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/drawable/no_internet.xml" value="0.3675" />
+        <entry key="..\:/StajPointo/IToDo/app/src/main/res/drawable/visible.xml" value="0.3675" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/layout/activity_login.xml" value="0.3009833262077811" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/layout/activity_register.xml" value="0.33" />
@@ -14,6 +17,7 @@
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/layout/add_task.xml" value="0.3009833262077811" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/layout/card_will_do.xml" value="0.36666666666666664" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/layout/layout_bg.xml" value="0.33" />
+        <entry key="..\:/StajPointo/IToDo/app/src/main/res/layout/password_valid_info.xml" value="0.3009833262077811" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/menu/menu_layout.xml" value="0.25" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/menu/trash_menu_layout.xml" value="0.3009833262077811" />
         <entry key="..\:/StajPointo/IToDo/app/src/main/res/mipmap-anydpi-v26/circle_logo.xml" value="0.165" />

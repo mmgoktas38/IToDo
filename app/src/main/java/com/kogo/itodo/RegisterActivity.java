@@ -4,13 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,6 +31,7 @@ public class RegisterActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     private ActivityRegisterBinding registerBinding;
     private ProgressDialog loader;
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +40,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(registerBinding.getRoot());
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); // dark mode cancel
+        dialog = new Dialog(RegisterActivity.this);
 
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null){
@@ -71,6 +77,25 @@ public class RegisterActivity extends AppCompatActivity {
             registerBinding.editTextPasswordVerify.setSelection(registerBinding.editTextPasswordVerify.length());   // set cursor position end of the password
         });
 
+        registerBinding.imageViewInfoPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                dialog.setContentView(R.layout.password_valid_info);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                Button buttonOkPasswordInfo=dialog.findViewById(R.id.buttonOkPasswordInfo);
+
+                buttonOkPasswordInfo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
+            }
+        });
+
     }
 
     private void registerUser(){
@@ -93,6 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
         if (!isValidPassword(password) || !isValidPassword(passwordVerify)){
             Toast.makeText(this, "Please define stronger password!", Toast.LENGTH_LONG).show();
+
             return;
         }
         else{
