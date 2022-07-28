@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -35,7 +37,17 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         loader = new ProgressDialog(this);
-        loginBinding.buttonLogin.setOnClickListener(view -> { authenticateUser(); });
+        loginBinding.buttonLogin.setOnClickListener(view -> {
+            if (isNetworkAvailable(LoginActivity.this)){
+                loader.dismiss();
+                authenticateUser();
+            }
+            else {
+                loader.setMessage("No internet, check your internet connection!");
+                loader.show();
+                return;
+            }
+        });
         loginBinding.textViewRegister.setOnClickListener(view -> { switchToRegister(); });
         loginBinding.imageViewVisibleOnOff.setOnClickListener(view -> {
             if (loginBinding.editTextPassword.getInputType() == 144){    // 144 mean is that if we can see the password now
@@ -80,6 +92,12 @@ public class LoginActivity extends AppCompatActivity {
         }
 
     }
+
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
+
 
     private void switchToRegister(){
         Intent intent = new Intent(this, RegisterActivity.class);

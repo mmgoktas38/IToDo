@@ -4,7 +4,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -39,7 +41,17 @@ public class RegisterActivity extends AppCompatActivity {
 
         loader = new ProgressDialog(this);
 
-        registerBinding.buttonRegister.setOnClickListener(view -> { registerUser(); });
+        registerBinding.buttonRegister.setOnClickListener(view -> {
+            if (isNetworkAvailable(RegisterActivity.this)){
+                loader.dismiss();
+                registerUser();
+            }
+            else {
+                loader.setMessage("No internet, check your internet connection!");
+                loader.show();
+                return;
+            }
+        });
         registerBinding.textViewLogin.setOnClickListener(view -> { switchToLogin(); });
         registerBinding.imageViewVisibleOnOff.setOnClickListener(view -> {
             if (registerBinding.editTextPassword.getInputType() == 144){    // 144 mean is that if we can see the password now
@@ -121,6 +133,11 @@ public class RegisterActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 
     public static boolean isValidEmail(String email){

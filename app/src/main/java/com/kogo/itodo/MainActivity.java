@@ -10,9 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -87,6 +89,18 @@ public class MainActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         reference = database.getReference().child("tasks").child(onlineUserID);
         trashReference = database.getReference().child("trash").child(onlineUserID);
+
+        if (isNetworkAvailable(MainActivity.this)){
+            loader.dismiss();
+            mainBinding.imageViewAddTask.setVisibility(View.INVISIBLE);
+        }
+        else {
+            loader.setMessage("No internet, check your internet connection!");
+            loader.show();
+            mainBinding.imageViewAddTask.setVisibility(View.VISIBLE);
+            mainBinding.imageViewAddTask.setImageResource(R.drawable.no_internet);
+            return;
+        }
 
         holdRecyclerView();
         getDatas();
@@ -326,6 +340,10 @@ public class MainActivity extends AppCompatActivity {
 
     };
 
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
 
     private void logoutUser(){
         FirebaseAuth.getInstance().signOut();

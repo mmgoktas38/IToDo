@@ -80,11 +80,13 @@ public class WillDoAdapter extends RecyclerView.Adapter<WillDoAdapter.CardViewHo
         holder.textViewWillDo.setText(willDoItem.getWillDoText());
         holder.textViewCreatedDate.setText(willDoItem.getCreatedDate().toString());
         holder.textViewDeadline.setText(willDoItem.getDeadLine().toString());
-        holder.cardViewWillDo.setOnClickListener(view -> {
+
+        // click the task update but not now :)
+        /*holder.cardViewWillDo.setOnClickListener(view -> {
 
             AlertDialog.Builder myDialog = new AlertDialog.Builder(mContext);
             LayoutInflater inflater = LayoutInflater.from(mContext);
-            View myView = inflater.inflate(R.layout.add_task,null);
+            View myView = inflater.inflate(R.layout.add_task, null);
             myDialog.setView(myView);
             final AlertDialog dialog = myDialog.create();
             dialog.setCancelable(false);
@@ -125,6 +127,7 @@ public class WillDoAdapter extends RecyclerView.Adapter<WillDoAdapter.CardViewHo
             dialog.show();
 
         });
+    */
         holder.cardViewWillDo.setOnLongClickListener(view -> {
            // reference.removeValue();
             Log.e("silindi", String.valueOf(willDoItem.getId()));
