@@ -2,6 +2,7 @@ package com.kogo.itodo;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -55,6 +56,8 @@ public class TrashActivity extends AppCompatActivity {
 
         setSupportActionBar(trashBinding.toolbar);
         getSupportActionBar().setTitle("Trash List");
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser(); // When initializing your Activity, check to see if the user is currently signed in:

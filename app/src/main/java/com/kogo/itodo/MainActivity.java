@@ -3,6 +3,7 @@ package com.kogo.itodo;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -74,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(mainBinding.toolbar);
         getSupportActionBar().setTitle("itodo List");
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         loader = new ProgressDialog(this);
 

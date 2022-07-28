@@ -2,6 +2,7 @@ package com.kogo.itodo;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -32,6 +33,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         registerBinding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(registerBinding.getRoot());
+
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO); // dark mode cancel
 
         mAuth = FirebaseAuth.getInstance();
         if (mAuth.getCurrentUser() != null){
