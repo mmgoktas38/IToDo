@@ -90,5 +90,14 @@
         app:layout_constraintEnd_toEndOf="@+id/editTextPassword"
         app:layout_constraintTop_toTopOf="@+id/editTextPassword"
         app:srcCompat="@drawable/visible_off" />
+
+    <TextView
+        android:id="@+id/textViewForgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forgot Password?"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/buttonLogin"
+        app:layout_constraintTop_toTopOf="@+id/textViewRegister" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

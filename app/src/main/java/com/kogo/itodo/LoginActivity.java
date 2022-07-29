@@ -64,6 +64,8 @@ public class LoginActivity extends AppCompatActivity {
             loginBinding.editTextPassword.setSelection(loginBinding.editTextPassword.length());   // set cursor position end of the password
         });
 
+        loginBinding.textViewForgotPassword.setOnClickListener(view -> { switchToForgotPassword(); });
+
     }
 
     private void authenticateUser(){
@@ -104,6 +106,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void switchToRegister(){
         Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void switchToForgotPassword(){
+        Intent intent = new Intent(this, ForgotPasswordActivity.class);
         startActivity(intent);
         finish();
     }

@@ -77,6 +77,7 @@ public class WillDoAdapter extends RecyclerView.Adapter<WillDoAdapter.CardViewHo
         System.out.println("id: : " + String.valueOf(onlineUserID)  + "   getid  " + willDoItem.getId());
         // reference = database.getReference().child("tasks").child(onlineUserID).child(willDoItem.getId());
 
+
         holder.textViewWillDo.setText(willDoItem.getWillDoText());
         holder.textViewCreatedDate.setText(willDoItem.getCreatedDate().toString());
         holder.textViewDeadline.setText(willDoItem.getDeadLine().toString());
