@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if (filteredlist.isEmpty()) {
-            Toast.makeText(this, "No Data Found..", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "No Data Found..", Toast.LENGTH_SHORT).show();
             willDoAdapter.filterList(filteredlist);
         } else {
             willDoAdapter.filterList(filteredlist);
